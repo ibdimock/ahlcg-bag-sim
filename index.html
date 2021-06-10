@@ -1,9 +1,387 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-    <meta http-equiv="refresh" content="0; url='ahlcg-simulator-frontend/simulator.html'" />
+	<link rel="shortcut icon" href="chaos.png" type="image/x-icon">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" href="css/custom.min.css"/>
+
+    <title>Chaos Bag Simulator - AHLCG</title>
+	
+	<style>
+	.token-icon {
+		height: 1.5em;
+		width: 1.5em;
+	}
+	
+	</style>
+	<script src="simulator.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@3.3.2/dist/chart.min.js" integrity="sha256-qoN08nWXsFH+S9CtIq99e5yzYHioRHtNB9t2qy1MSmc=" crossorigin="anonymous"></script>
+	<script type="module">
+      import init, {draw} from "./pkg/ahlcg_bag_simulator.js";
+      init()
+        .then(() => {
+          draw()
+        });
+      </script>
   </head>
   <body>
-    <p>Please follow <a href="ahlcg-simulator-frontend/simulator.html">this link</a>.</p>
+    <h1 class="text-center">Chaos Bag Simulator</h1>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-4">
+				<div class="row m-1 gy-2">
+					<div class="col-1">+1</div>
+					<div class="col-4">
+						<div class="btn-group" role="group">
+							<input type="radio" class="btn-check" name="plus-one-btn-radio" id="plus-one-btn-radio0" checked>
+							<label class="btn btn-outline-primary" for="plus-one-btn-radio0">0</label>
+							
+							<input type="radio" class="btn-check" name="plus-one-btn-radio" id="plus-one-btn-radio1">
+							<label class="btn btn-outline-primary"for="plus-one-btn-radio1">1</label>
+							
+							<input type="radio" class="btn-check" name="plus-one-btn-radio" id="plus-one-btn-radio2">
+							<label class="btn btn-outline-primary" for="plus-one-btn-radio2">2</label>
+						</div>
+					</div>
+					<div class="col-7"></div>
+					<div class="col-1">
+						0
+					</div>
+					<div class="col-4">
+						<div class="btn-group" role="group">
+							<input type="radio" class="btn-check" name="zero-btn-radio" id="zero-btn-radio0" checked>
+							<label class="btn btn-outline-primary" for="zero-btn-radio0">0</label>
+							
+							<input type="radio" class="btn-check" name="zero-btn-radio" id="zero-btn-radio1">
+							<label class="btn btn-outline-primary" for="zero-btn-radio1">1</label>
+							
+							<input type="radio" class="btn-check" name="zero-btn-radio" id="zero-btn-radio2">
+							<label class="btn btn-outline-primary" for="zero-btn-radio2">2</label>
+						</div>
+					</div>
+					<div class="col-7"></div>
+					<div class="col-1">-1</div>
+					<div class="col-4">
+						<div class="btn-group" role="group">
+							<input type="radio" class="btn-check" name="minus-one-btn-radio" id="minus-one-btn-radio0" checked>
+							<label class="btn btn-outline-primary" for="minus-one-btn-radio0">0</label>
+							
+							<input type="radio" class="btn-check" name="minus-one-btn-radio" id="minus-one-btn-radio1">
+							<label class="btn btn-outline-primary" for="minus-one-btn-radio1">1</label>
+							
+							<input type="radio" class="btn-check" name="minus-one-btn-radio" id="minus-one-btn-radio2">
+							<label class="btn btn-outline-primary" for="minus-one-btn-radio2">2</label>
+						</div>
+					</div>
+					<div class="col-7"></div>
+					<div class="col-1">-2</div>
+					<div class="col-4">
+						<div class="btn-group" role="group">
+							<input type="radio" class="btn-check" name="minus-two-btn-radio" id="minus-two-btn-radio0" checked>
+							<label class="btn btn-outline-primary" for="minus-two-btn-radio0">0</label>
+							
+							<input type="radio" class="btn-check" name="minus-two-btn-radio" id="minus-two-btn-radio1">
+							<label class="btn btn-outline-primary" for="minus-two-btn-radio1">1</label>
+							
+							<input type="radio" class="btn-check" name="minus-two-btn-radio" id="minus-two-btn-radio2">
+							<label class="btn btn-outline-primary"  for="minus-two-btn-radio2">2</label>
+						</div>
+					</div>
+					<div class="col-7"></div>
+					<div class="col-1">-3</div>
+					<div class="col-4">
+						<div class="btn-group" role="group">
+							<input type="radio" class="btn-check" name="minus-three-btn-radio" id="minus-three-btn-radio0" checked>
+							<label class="btn btn-outline-primary" for="minus-three-btn-radio0">0</label>
+							
+							<input type="radio" class="btn-check" name="minus-three-btn-radio" id="minus-three-btn-radio1">
+							<label class="btn btn-outline-primary" for="minus-three-btn-radio1">1</label>
+							
+							<input type="radio" class="btn-check" name="minus-three-btn-radio" id="minus-three-btn-radio2">
+							<label class="btn btn-outline-primary" for="minus-three-btn-radio2">2</label>
+						</div>
+					</div>
+					<div class="col-7"></div>
+					<div class="col-1">-4</div>
+					<div class="col-4">
+						<div class="btn-group" role="group">
+							<input type="radio" class="btn-check" name="minus-four-btn-radio" id="minus-four-btn-radio0" checked>
+							<label class="btn btn-outline-primary" for="minus-four-btn-radio0">0</label>
+							
+							<input type="radio" class="btn-check" name="minus-four-btn-radio" id="minus-four-btn-radio1">
+							<label class="btn btn-outline-primary" for="minus-four-btn-radio1">1</label>
+							
+							<input type="radio" class="btn-check" name="minus-four-btn-radio" id="minus-four-btn-radio2">
+							<label class="btn btn-outline-primary" for="minus-four-btn-radio2">2</label>
+						</div>
+					</div>
+					<div class="col-7"></div>
+					<div class="col-1">-5</div>
+					<div class="col-4">
+						<div class="btn-group" role="group">
+							<input type="radio" class="btn-check" name="minus-five-btn-radio" id="minus-five-btn-radio0" checked>
+							<label class="btn btn-outline-primary" for="minus-five-btn-radio0">0</label>
+							
+							<input type="radio" class="btn-check" name="minus-five-btn-radio" id="minus-five-btn-radio1">
+							<label class="btn btn-outline-primary" for="minus-five-btn-radio1">1</label>
+							
+							<input type="radio" class="btn-check" name="minus-five-btn-radio" id="minus-five-btn-radio2">
+							<label class="btn btn-outline-primary" for="minus-five-btn-radio2">2</label>
+						</div>
+					</div>
+					<div class="col-7"></div>
+					<div class="col-1">-6</div>
+					<div class="col-4">
+						<div class="btn-group" role="group">
+							<input type="radio" class="btn-check" name="minus-six-btn-radio" id="minus-six-btn-radio0" checked>
+							<label class="btn btn-outline-primary" for="minus-six-btn-radio0">0</label>
+							
+							<input type="radio" class="btn-check" name="minus-six-btn-radio" id="minus-six-btn-radio1">
+							<label class="btn btn-outline-primary" for="minus-six-btn-radio1">1</label>
+							
+							<input type="radio" class="btn-check" name="minus-six-btn-radio" id="minus-six-btn-radio2">
+							<label class="btn btn-outline-primary" for="minus-six-btn-radio2">2</label>
+						</div>
+					</div>
+					<div class="col-7"></div>
+					<div class="col-1">-7</div>
+					<div class="col-4">
+						<div class="btn-group" role="group">
+							<input type="radio" class="btn-check" name="minus-seven-btn-radio" id="minus-seven-btn-radio0" checked>
+							<label class="btn btn-outline-primary" for="minus-seven-btn-radio0">0</label>
+							
+							<input type="radio" class="btn-check" name="minus-seven-btn-radio" id="minus-seven-btn-radio1">
+							<label class="btn btn-outline-primary" for="minus-seven-btn-radio1">1</label>
+							
+							<input type="radio" class="btn-check" name="minus-seven-btn-radio" id="minus-seven-btn-radio2">
+							<label class="btn btn-outline-primary" for="minus-seven-btn-radio2">2</label>
+						</div>
+					</div>
+					<div class="col-7"></div>
+					<div class="col-1">-8</div>
+					<div class="col-4">
+						<div class="btn-group" role="group">
+							<input type="radio" class="btn-check" name="minus-eight-btn-radio" id="minus-eight-btn-radio0" checked>
+							<label class="btn btn-outline-primary" for="minus-eight-btn-radio0">0</label>
+							
+							<input type="radio" class="btn-check" name="minus-eight-btn-radio" id="minus-eight-btn-radio1">
+							<label class="btn btn-outline-primary" for="minus-eight-btn-radio1">1</label>
+							
+							<input type="radio" class="btn-check" name="minus-eight-btn-radio" id="minus-eight-btn-radio2">
+							<label class="btn btn-outline-primary" for="minus-eight-btn-radio2">2</label>
+						</div>
+					</div>
+					<div class="col-7"></div>
+					<div class="col-1">
+						<img src="svgs/skull-m.svg" class="token-icon"/>
+					</div>
+					<div class="col-4">
+						<div class="btn-group" role="group">
+							<input type="radio" class="btn-check" name="skull-btn-radio" id="skull-btn-radio0" checked>
+							<label class="btn btn-outline-primary" for="skull-btn-radio0">0</label>
+							
+							<input type="radio" class="btn-check" name="skull-btn-radio" id="skull-btn-radio1">
+							<label class="btn btn-outline-primary" for="skull-btn-radio1">1</label>
+							
+							<input type="radio" class="btn-check" name="skull-btn-radio" id="skull-btn-radio2">
+							<label class="btn btn-outline-primary" for="skull-btn-radio2">2</label>
+						</div>
+					</div>
+					<div class="col-6">
+						<input type="range" class="form-range" id="skull-value" min="-10" max="10"/>
+					</div>
+					<div class="col-1">
+						<span  id="skull-value-out">0</span>
+					</div>
+					<div class="col-1">
+						<img src="svgs/cultist-m.svg" class="token-icon"/>
+					</div>
+					<div class="col-4">
+						<div class="btn-group" role="group">
+							<input type="radio" class="btn-check" name="cultist-btn-radio" id="cultist-btn-radio0" checked>
+							<label class="btn btn-outline-primary" for="cultist-btn-radio0">0</label>
+							
+							<input type="radio" class="btn-check" name="cultist-btn-radio" id="cultist-btn-radio1">
+							<label class="btn btn-outline-primary"for="cultist-btn-radio1">1</label>
+							
+							<input type="radio" class="btn-check" name="cultist-btn-radio" id="cultist-btn-radio2">
+							<label class="btn btn-outline-primary" for="cultist-btn-radio2">2</label>
+						</div>
+					</div>
+					<div class="col-6">
+						<input type="range" class="form-range" id="cultist-value" min="-10" max="10"/>
+					</div>
+					<div class="col-1">
+						<span  id="cultist-value-out">0</span>
+					</div>
+					<div class="col-1">
+						<img src="svgs/tablet-m.svg" class="token-icon"/>
+					</div>
+					<div class="col-4">
+						<div class="btn-group" role="group">
+							<input type="radio" class="btn-check" name="tablet-btn-radio" id="tablet-btn-radio0" checked>
+							<label class="btn btn-outline-primary" for="tablet-btn-radio0">0</label>
+							
+							<input type="radio" class="btn-check" name="tablet-btn-radio" id="tablet-btn-radio1">
+							<label class="btn btn-outline-primary" for="tablet-btn-radio1">1</label>
+							
+							<input type="radio" class="btn-check" name="tablet-btn-radio" id="tablet-btn-radio2">
+							<label class="btn btn-outline-primary" for="tablet-btn-radio2">2</label>
+						</div>
+					</div>
+					<div class="col-6">
+						<input type="range" class="form-range" id="tablet-value" min="-10" max="10"/>
+					</div>
+					<div class="col-1">
+						<span  id="tablet-value-out">0</span>
+					</div>
+					<div class="col-1">
+						<img src="svgs/elder-thing-m.svg" class="token-icon"/>
+					</div>
+					<div class="col-4">
+						<div class="btn-group" role="group">
+							<input type="radio" class="btn-check" name="elder-thing-btn-radio" id="elder-thing-btn-radio0" checked>
+							<label class="btn btn-outline-primary" for="elder-thing-btn-radio0">0</label>
+							
+							<input type="radio" class="btn-check" name="elder-thing-btn-radio" id="elder-thing-btn-radio1">
+							<label class="btn btn-outline-primary" for="elder-thing-btn-radio1">1</label>
+							
+							<input type="radio" class="btn-check" name="elder-thing-btn-radio" id="elder-thing-btn-radio2">
+							<label class="btn btn-outline-primary" for="elder-thing-btn-radio2">2</label>
+						</div>
+					</div>
+					<div class="col-6">
+						<input type="range" class="form-range" id="elder-thing-value" min="-10" max="10"/>
+					</div>
+					<div class="col-1">
+						<span  id="elder-thing-value-out">0</span>
+					</div>
+					<div class="col-1">
+						<img src="svgs/auto-fail-m.svg" class="token-icon"/>
+					</div>
+					<div class="col-4">
+						<div class="btn-group" role="group">
+							<input type="radio" class="btn-check" name="auto-fail-btn-radio" id="auto-fail-btn-radio0">
+							<label class="btn btn-outline-primary" for="auto-fail-btn-radio0">0</label>
+							
+							<input type="radio" class="btn-check" name="auto-fail-btn-radio" id="auto-fail-btn-radio1" checked>
+							<label class="btn btn-outline-primary" for="auto-fail-btn-radio1">1</label>
+						</div>
+					</div>
+					<div class="col-7"></div>
+					<div class="col-1">
+						<img src="svgs/elder-sign-m.svg" class="token-icon"/>
+					</div>
+					<div class="col-4">
+						<div class="btn-group" role="group">
+							<input type="radio" class="btn-check" name="elder-sign-btn-radio" id="elder-sign-btn-radio0">
+							<label class="btn btn-outline-primary" for="elder-sign-btn-radio0">0</label>
+							
+							<input type="radio" class="btn-check" name="elder-sign-btn-radio" id="elder-sign-btn-radio1" checked>
+							<label class="btn btn-outline-primary" for="elder-sign-btn-radio1">1</label>
+						</div>
+					</div>
+					<div class="form-check form-switch col-3">
+						<input class="form-check-input" type="checkbox" id="elder-sign-auto-success-checkbox">
+						<label class="form-check-label" for="elder-sign-auto-success-checkbox">Auto Success</label>
+					</div>
+					<div class="col-3">
+						<input type="range" class="form-range" id="elder-sign-value" min="0" max="10"/>
+					</div>
+					<div class="col-1">
+						<span  id="elder-sign-value-out">0</span>
+					</div>
+					<div class="col-1">
+						<img src="svgs/bless-m.svg" class="token-icon"/>
+					</div>
+					<div class="col-4">
+						<div class="btn-group" role="group">
+							<input type="radio" class="btn-check" name="bless-btn-radio" id="bless-btn-radio0" checked>
+							<label class="btn btn-outline-primary px-2" for="bless-btn-radio0">0</label>
+							
+							<input type="radio" class="btn-check" name="bless-btn-radio" id="bless-btn-radio1">
+							<label class="btn btn-outline-primary px-2" for="bless-btn-radio1">1</label>
+							
+							<input type="radio" class="btn-check" name="bless-btn-radio" id="bless-btn-radio2">
+							<label class="btn btn-outline-primary px-2"  for="bless-btn-radio2">2</label>
+							
+							<input type="radio" class="btn-check" name="bless-btn-radio" id="bless-btn-radio3">
+							<label class="btn btn-outline-primary px-2" for="bless-btn-radio3">3</label>
+							
+							<input type="radio" class="btn-check" name="bless-btn-radio" id="bless-btn-radio4">
+							<label class="btn btn-outline-primary px-2" for="bless-btn-radio4">4</label>
+							
+							<input type="radio" class="btn-check" name="bless-btn-radio" id="bless-btn-radio5">
+							<label class="btn btn-outline-primary px-2" for="bless-btn-radio5">5</label>
+							
+							<input type="radio" class="btn-check" name="bless-btn-radio" id="bless-btn-radio6">
+							<label class="btn btn-outline-primary px-2" for="bless-btn-radio6">6</label>
+							
+							<input type="radio" class="btn-check" name="bless-btn-radio" id="bless-btn-radio7">
+							<label class="btn btn-outline-primary px-2" for="bless-btn-radio7">7</label>
+							
+							<input type="radio" class="btn-check" name="bless-btn-radio" id="bless-btn-radio8">
+							<label class="btn btn-outline-primary px-2" for="bless-btn-radio8">8</label>
+							
+							<input type="radio" class="btn-check" name="bless-btn-radio" id="bless-btn-radio9">
+							<label class="btn btn-outline-primary px-2" for="bless-btn-radio9">9</label>
+							
+							<input type="radio" class="btn-check" name="bless-btn-radio" id="bless-btn-radio10">
+							<label class="btn btn-outline-primary px-2"  for="bless-btn-radio10">10</label>
+						</div>
+					</div>
+					<div class="col-6"></div>
+					<div class="col-1"></div>
+					<div class="col-1">
+						<img src="svgs/curse-m.svg" class="token-icon"/>
+					</div>
+					<div class="col-3">
+						<div class="btn-group col-3" role="group">
+							<input type="radio" class="btn-check" name="curse-btn-radio" id="curse-btn-radio0" checked>
+							<label class="btn btn-outline-primary px-2" for="curse-btn-radio0">0</label>
+							
+							<input type="radio" class="btn-check" name="curse-btn-radio" id="curse-btn-radio1">
+							<label class="btn btn-outline-primary px-2" for="curse-btn-radio1">1</label>
+							
+							<input type="radio" class="btn-check" name="curse-btn-radio" id="curse-btn-radio2">
+							<label class="btn btn-outline-primary px-2" for="curse-btn-radio2">2</label>
+							
+							<input type="radio" class="btn-check" name="curse-btn-radio" id="curse-btn-radio3">
+							<label class="btn btn-outline-primary px-2" for="curse-btn-radio3">3</label>
+							
+							<input type="radio" class="btn-check" name="curse-btn-radio" id="curse-btn-radio4">
+							<label class="btn btn-outline-primary px-2" for="curse-btn-radio4">4</label>
+							
+							<input type="radio" class="btn-check" name="curse-btn-radio" id="curse-btn-radio5">
+							<label class="btn btn-outline-primary px-2" for="curse-btn-radio5">5</label>
+							
+							<input type="radio" class="btn-check" name="curse-btn-radio" id="curse-btn-radio6">
+							<label class="btn btn-outline-primary px-2" for="curse-btn-radio6">6</label>
+							
+							<input type="radio" class="btn-check" name="curse-btn-radio" id="curse-btn-radio7">
+							<label class="btn btn-outline-primary px-2" for="curse-btn-radio7">7</label>
+							
+							<input type="radio" class="btn-check" name="curse-btn-radio" id="curse-btn-radio8">
+							<label class="btn btn-outline-primary px-2" for="curse-btn-radio8">8</label>
+							
+							<input type="radio" class="btn-check" name="curse-btn-radio" id="curse-btn-radio9">
+							<label class="btn btn-outline-primary px-2" for="curse-btn-radio9">9</label>
+							
+							<input type="radio" class="btn-check" name="curse-btn-radio" id="curse-btn-radio10">
+							<label class="btn btn-outline-primary px-2" for="curse-btn-radio10">10</label>
+						</div>
+					</div>
+					<div class="col-8"></div>
+					<button type="button" class="btn btn-primary col-6 offset-3" id="run-simulation-btn">Run Draw Simulation</button>
+				</div>
+			</div>
+			<div class="col-8 p-5">
+				<canvas id="probability-chart" width="100%""></canvas>
+			</div>
+		</div>
+	</div>
   </body>
 </html>

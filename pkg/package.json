@@ -1,15 +1,15 @@
 {
-  "name": "arkham-lcg-chaos-bag-simulator",
+  "name": "ahlcg-bag-simulator",
   "collaborators": [
     "Ian Dimock <ibdimock@gmail.com>"
   ],
   "version": "0.1.0",
   "files": [
-    "arkham_lcg_chaos_bag_simulator_bg.wasm",
-    "arkham_lcg_chaos_bag_simulator.js",
-    "arkham_lcg_chaos_bag_simulator.d.ts"
+    "ahlcg_bag_simulator_bg.wasm",
+    "ahlcg_bag_simulator.js",
+    "ahlcg_bag_simulator.d.ts"
   ],
-  "module": "arkham_lcg_chaos_bag_simulator.js",
-  "types": "arkham_lcg_chaos_bag_simulator.d.ts",
+  "module": "ahlcg_bag_simulator.js",
+  "types": "ahlcg_bag_simulator.d.ts",
   "sideEffects": false
 }
