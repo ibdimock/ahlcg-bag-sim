@@ -9,8 +9,9 @@ extern {
 }
 
     
+#[wasm_bindgen]
 #[derive(PartialEq,Eq,Hash,Copy,Clone)]
-enum Token {
+pub enum Token {
     PlusOne,
     Zero,
     MinusOne,
@@ -56,7 +57,8 @@ impl fmt::Display for Token {
     }
 }
 
-struct ChaosBag {
+#[wasm_bindgen]
+pub struct ChaosBag {
     token_counts: HashMap<Token, u8>,
     token_values: HashMap<Token, i8>,
     draw_again: HashMap<Token, bool>    
@@ -73,8 +75,9 @@ struct DrawAgainState {
     //probability: f64
 }
 
+#[wasm_bindgen]
 #[derive(PartialEq,Eq,Hash)]
-struct FinalState {
+pub struct FinalState {
     bless_count: u8,
     curse_count: u8,
     skull_count: u8,
