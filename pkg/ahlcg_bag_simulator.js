@@ -17,9 +17,44 @@ function getStringFromWasm0(ptr, len) {
     return cachedTextDecoder.decode(getUint8Memory0().subarray(ptr, ptr + len));
 }
 /**
+* @returns {ChaosBag}
+*/
+export function build_chaos_bag() {
+    var ret = wasm.build_chaos_bag();
+    return ChaosBag.__wrap(ret);
+}
+
+/**
 */
 export function draw() {
     wasm.draw();
+}
+
+/**
+*/
+export const Token = Object.freeze({ PlusOne:0,"0":"PlusOne",Zero:1,"1":"Zero",MinusOne:2,"2":"MinusOne",MinusTwo:3,"3":"MinusTwo",MinusThree:4,"4":"MinusThree",MinusFour:5,"5":"MinusFour",MinusFive:6,"6":"MinusFive",MinusSix:7,"7":"MinusSix",MinusSeven:8,"8":"MinusSeven",MinusEight:9,"9":"MinusEight",Skull:10,"10":"Skull",Cultist:11,"11":"Cultist",ElderThing:12,"12":"ElderThing",Tablet:13,"13":"Tablet",ElderSign:14,"14":"ElderSign",AutoFail:15,"15":"AutoFail",Bless:16,"16":"Bless",Curse:17,"17":"Curse", });
+/**
+*/
+export class ChaosBag {
+
+    static __wrap(ptr) {
+        const obj = Object.create(ChaosBag.prototype);
+        obj.ptr = ptr;
+
+        return obj;
+    }
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_chaosbag_free(ptr);
+    }
 }
 
 async function load(module, imports) {
@@ -61,6 +96,9 @@ async function init(input) {
     imports.wbg = {};
     imports.wbg.__wbg_alert_c6886314a9d0c61d = function(arg0, arg1) {
         alert(getStringFromWasm0(arg0, arg1));
+    };
+    imports.wbg.__wbindgen_throw = function(arg0, arg1) {
+        throw new Error(getStringFromWasm0(arg0, arg1));
     };
 
     if (typeof input === 'string' || (typeof Request === 'function' && input instanceof Request) || (typeof URL === 'function' && input instanceof URL)) {

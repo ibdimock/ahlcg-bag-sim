@@ -1,15 +1,15 @@
 {
-  "name": "ahlcg-bag-simulator",
+  "name": "ahlcg-bag-sim",
   "collaborators": [
     "Ian Dimock <ibdimock@gmail.com>"
   ],
   "version": "0.1.0",
   "files": [
-    "ahlcg_bag_simulator_bg.wasm",
-    "ahlcg_bag_simulator.js",
-    "ahlcg_bag_simulator.d.ts"
+    "ahlcg_bag_sim_bg.wasm",
+    "ahlcg_bag_sim.js",
+    "ahlcg_bag_sim.d.ts"
   ],
-  "module": "ahlcg_bag_simulator.js",
-  "types": "ahlcg_bag_simulator.d.ts",
+  "module": "ahlcg_bag_sim.js",
+  "types": "ahlcg_bag_sim.d.ts",
   "sideEffects": false
 }
