@@ -6,7 +6,8 @@ rmdir /Q /S ..\ahlcg-bag-simulator-gh-pages\svgs
 cmd /C wasm-pack build --release --target web
 
 mkdir ..\ahlcg-bag-simulator-gh-pages\pkg\
-copy /Y pkg\*.* ..\ahlcg-bag-simulator-gh-pages\pkg\
+copy /Y pkg\*.js ..\ahlcg-bag-simulator-gh-pages\pkg\
+copy /Y pkg\*.wasm ..\ahlcg-bag-simulator-gh-pages\pkg\
 
 cmd /C sass .\ahlcg-simulator-frontend\scss\custom.scss .\ahlcg-simulator-frontend\css\custom.css
 cmd /C css-minify -f .\ahlcg-simulator-frontend\css\custom.css
