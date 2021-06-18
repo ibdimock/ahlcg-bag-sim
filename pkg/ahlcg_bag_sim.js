@@ -24,6 +24,38 @@ export function build_chaos_bag() {
     return ChaosBag.__wrap(ret);
 }
 
+function _assertClass(instance, klass) {
+    if (!(instance instanceof klass)) {
+        throw new Error(`expected instance of ${klass.name}`);
+    }
+    return instance.ptr;
+}
+
+let cachegetInt32Memory0 = null;
+function getInt32Memory0() {
+    if (cachegetInt32Memory0 === null || cachegetInt32Memory0.buffer !== wasm.memory.buffer) {
+        cachegetInt32Memory0 = new Int32Array(wasm.memory.buffer);
+    }
+    return cachegetInt32Memory0;
+}
+/**
+* @param {ChaosBag} chaos_bag
+* @returns {string}
+*/
+export function draw_bag(chaos_bag) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        _assertClass(chaos_bag, ChaosBag);
+        wasm.draw_bag(retptr, chaos_bag.ptr);
+        var r0 = getInt32Memory0()[retptr / 4 + 0];
+        var r1 = getInt32Memory0()[retptr / 4 + 1];
+        return getStringFromWasm0(r0, r1);
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+        wasm.__wbindgen_free(r0, r1);
+    }
+}
+
 /**
 */
 export function draw() {
@@ -54,6 +86,27 @@ export class ChaosBag {
     free() {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_chaosbag_free(ptr);
+    }
+    /**
+    * @param {number} token
+    * @param {number} count
+    */
+    set_token_count(token, count) {
+        wasm.chaosbag_set_token_count(this.ptr, token, count);
+    }
+    /**
+    * @param {number} token
+    * @param {number} value
+    */
+    set_token_value(token, value) {
+        wasm.chaosbag_set_token_value(this.ptr, token, value);
+    }
+    /**
+    * @param {number} token
+    * @param {boolean} draw_again
+    */
+    set_draw_again(token, draw_again) {
+        wasm.chaosbag_set_draw_again(this.ptr, token, draw_again);
     }
 }
 
@@ -90,11 +143,11 @@ async function load(module, imports) {
 
 async function init(input) {
     if (typeof input === 'undefined') {
-        input = new URL('ahlcg_bag_simulator_bg.wasm', import.meta.url);
+        input = new URL('ahlcg_bag_sim_bg.wasm', import.meta.url);
     }
     const imports = {};
     imports.wbg = {};
-    imports.wbg.__wbg_alert_c6886314a9d0c61d = function(arg0, arg1) {
+    imports.wbg.__wbg_alert_954cefb79d1c630e = function(arg0, arg1) {
         alert(getStringFromWasm0(arg0, arg1));
     };
     imports.wbg.__wbindgen_throw = function(arg0, arg1) {
