@@ -75,7 +75,6 @@ struct DrawAgainState {
     //probability: f64
 }
 
-#[wasm_bindgen]
 #[derive(PartialEq,Eq,Hash)]
 pub struct FinalState {
     bless_count: u8,
@@ -88,7 +87,8 @@ pub struct FinalState {
     //probability: f64
 }
 
-fn build_chaos_bag() -> ChaosBag {
+#[wasm_bindgen]
+pub fn build_chaos_bag() -> ChaosBag {
     let mut chaos_bag = ChaosBag {
         token_counts: HashMap::new(),
         token_values: HashMap::new(),
@@ -117,26 +117,34 @@ fn build_chaos_bag() -> ChaosBag {
     return chaos_bag;
 }
 
-fn set_token_count(chaos_bag: &mut ChaosBag, token: Token, count: u8) {
-    chaos_bag.token_counts.insert(token, count);
-}
+#[wasm_bindgen]
+impl ChaosBag {
+	#[wasm_bindgen]
+	pub fn set_token_count(&mut self, token: Token, count: u8) {
+		if count != 0 {
+			self.token_counts.insert(token, count);
+		}
+	}
 
-fn set_token_value(chaos_bag: &mut ChaosBag, token: Token, value: i8) {
-    chaos_bag.token_values.insert(token, value);
-}
+	#[wasm_bindgen]
+	pub fn set_token_value(&mut self, token: Token, value: i8) {
+		self.token_values.insert(token, value);
+	}
 
-fn set_draw_again(chaos_bag: &mut ChaosBag, token: Token, draw_again: bool) {
-    chaos_bag.draw_again.insert(token, draw_again);
-}
+	#[wasm_bindgen]
+	pub fn set_draw_again(&mut self, token: Token, draw_again: bool) {
+		self.draw_again.insert(token, draw_again);
+	}
 
-fn print_chaos_bag(chaos_bag: &ChaosBag) {
-    println!("*------------------------------------------------------*");
+	fn print_(&self) {
+		println!("*------------------------------------------------------*");
 
-    for token in chaos_bag.token_counts.keys() {
-        println!("| {} - count:{:3}  |  value:{:4}  |  draw_again:{} |", token, chaos_bag.token_counts[token], chaos_bag.token_values[token], chaos_bag.draw_again.contains_key(token))
-    }
+		for token in self.token_counts.keys() {
+			println!("| {} - count:{:3}  |  value:{:4}  |  draw_again:{} |", token, self.token_counts[token], self.token_values[token], self.draw_again.contains_key(token))
+		}
 
-    println!("*------------------------------------------------------*");
+		println!("*------------------------------------------------------*");
+	}
 }
 
 fn get_final_states_str(states: &HashMap<FinalState, f64>) -> String {
@@ -332,28 +340,47 @@ fn main() {
     draw();
 }
 
+#[wasm_bindgen]
+pub fn draw_bag(chaos_bag: &mut ChaosBag) -> String {
+    let mut initial_states: HashMap<DrawAgainState,f64> = HashMap::new();
+    let mut finished_states: HashMap<FinalState,f64> = HashMap::new();
+    initial_states.insert(DrawAgainState { bless_count: 0, curse_count: 0, skull_count: 0, cultist_count: 0, tablet_count: 0, elder_thing_count: 0}, 1.0);
+
+    let token_count = count_tokens(&chaos_bag);
+    let mut states = initial_states;
+    
+    for i in 0..30 {
+        let new_states = draw_iter(&chaos_bag, &states, &mut finished_states, token_count - i);
+        let all_probs = sum_probabilities(&finished_states);
+        println!("{0:.12}", all_probs);
+        states = new_states;
+    }
+
+    let s: String = get_final_states_str(&finished_states);
+    return s;
+}
 
 #[wasm_bindgen]
 pub fn draw() {
     let mut my_chaos_bag = build_chaos_bag();
 
     // Test Bag
-    set_token_count(&mut my_chaos_bag, Token::PlusOne, 1);
-    set_token_count(&mut my_chaos_bag, Token::Zero, 2);
-    set_token_count(&mut my_chaos_bag, Token::MinusOne, 3);
-    set_token_count(&mut my_chaos_bag, Token::MinusTwo, 2);
-    set_token_count(&mut my_chaos_bag, Token::MinusThree, 1);
-    set_token_count(&mut my_chaos_bag, Token::MinusFour, 1);
-    set_token_count(&mut my_chaos_bag, Token::Skull, 2);
-    set_token_count(&mut my_chaos_bag, Token::Cultist, 1);
-    set_token_count(&mut my_chaos_bag, Token::AutoFail, 1);
-    set_token_count(&mut my_chaos_bag, Token::ElderSign, 1);
+    my_chaos_bag.set_token_count(Token::PlusOne, 1);
+    my_chaos_bag.set_token_count(Token::Zero, 2);
+    my_chaos_bag.set_token_count(Token::MinusOne, 3);
+    my_chaos_bag.set_token_count(Token::MinusTwo, 2);
+    my_chaos_bag.set_token_count(Token::MinusThree, 1);
+    my_chaos_bag.set_token_count(Token::MinusFour, 1);
+    my_chaos_bag.set_token_count(Token::Skull, 2);
+    my_chaos_bag.set_token_count(Token::Cultist, 1);
+    my_chaos_bag.set_token_count(Token::AutoFail, 1);
+    my_chaos_bag.set_token_count(Token::ElderSign, 1);
     //set_token_count(&mut my_chaos_bag, Token::Bless, 10);
     //set_token_count(&mut my_chaos_bag, Token::Curse, 10);
 
-    set_token_value(&mut my_chaos_bag, Token::Skull, -1);
-    set_token_value(&mut my_chaos_bag, Token::Cultist, -2);
-    set_token_value(&mut my_chaos_bag, Token::ElderSign, 2);  
+    my_chaos_bag.set_token_value(Token::Skull, -1);
+    my_chaos_bag.set_token_value(Token::Cultist, -2);
+    my_chaos_bag.set_token_value(Token::ElderSign, 2);  
 
     //print_chaos_bag(&my_chaos_bag);
 
