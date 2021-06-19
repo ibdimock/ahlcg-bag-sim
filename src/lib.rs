@@ -8,7 +8,9 @@ extern {
     pub fn alert(s: &str);
 }
 
-    
+const AUTO_SUCCESS: i8 = i8::MAX;
+const AUTO_FAIL: i8 = i8::MIN;
+
 #[wasm_bindgen]
 #[derive(PartialEq,Eq,Hash,Copy,Clone)]
 pub enum Token {
@@ -59,30 +61,30 @@ impl fmt::Display for Token {
 
 #[wasm_bindgen]
 pub struct ChaosBag {
-    token_counts: HashMap<Token, u8>,
+    token_counts: HashMap<Token, i8>,
     token_values: HashMap<Token, i8>,
-    draw_again: HashMap<Token, bool>    
+    draw_again: HashMap<Token, bool>
 }
 
 #[derive(PartialEq,Eq,Hash)]
 struct DrawAgainState {
-    bless_count: u8,
-    curse_count: u8,
-    skull_count: u8,
-    cultist_count: u8,
-    tablet_count: u8,
-    elder_thing_count: u8,
+    bless_count: i8,
+    curse_count: i8,
+    skull_count: i8,
+    cultist_count: i8,
+    tablet_count: i8,
+    elder_thing_count: i8,
     //probability: f64
 }
 
 #[derive(PartialEq,Eq,Hash)]
 pub struct FinalState {
-    bless_count: u8,
-    curse_count: u8,
-    skull_count: u8,
-    cultist_count: u8,
-    tablet_count: u8,
-    elder_thing_count: u8,
+    bless_count: i8,
+    curse_count: i8,
+    skull_count: i8,
+    cultist_count: i8,
+    tablet_count: i8,
+    elder_thing_count: i8,
     final_draw: Token,
     //probability: f64
 }
@@ -120,7 +122,7 @@ pub fn build_chaos_bag() -> ChaosBag {
 #[wasm_bindgen]
 impl ChaosBag {
 	#[wasm_bindgen]
-	pub fn set_token_count(&mut self, token: Token, count: u8) {
+	pub fn set_token_count(&mut self, token: Token, count: i8) {
 		if count != 0 {
 			self.token_counts.insert(token, count);
 		}
@@ -135,52 +137,42 @@ impl ChaosBag {
 	pub fn set_draw_again(&mut self, token: Token, draw_again: bool) {
 		self.draw_again.insert(token, draw_again);
 	}
-
-	fn print_(&self) {
-		println!("*------------------------------------------------------*");
-
-		for token in self.token_counts.keys() {
-			println!("| {} - count:{:3}  |  value:{:4}  |  draw_again:{} |", token, self.token_counts[token], self.token_values[token], self.draw_again.contains_key(token))
-		}
-
-		println!("*------------------------------------------------------*");
-	}
 }
 
 fn get_final_states_str(states: &HashMap<FinalState, f64>) -> String {
     let mut s = String::new();
-    writeln!(&mut s, "*------------------------------------------------------*");
+    writeln!(&mut s, "*------------------------------------------------------*").expect("Error formatting string");
 
     for (state, prob) in states.iter() {
-        write!(&mut s, "| DA: ");
+        write!(&mut s, "| DA: ").expect("Error formatting string");
         if state.bless_count > 0 {
-            write!(&mut s, "{}:{}", Token::Bless, state.bless_count);
+            write!(&mut s, "{}:{}", Token::Bless, state.bless_count).expect("Error formatting string");
         }
         if state.curse_count > 0 {
-            write!(&mut s,"{}:{}", Token::Curse, state.curse_count);
+            write!(&mut s,"{}:{}", Token::Curse, state.curse_count).expect("Error formatting string");
         }
         if state.skull_count > 0 {
-            write!(&mut s,"{}:{}", Token::Skull, state.skull_count);
+            write!(&mut s,"{}:{}", Token::Skull, state.skull_count).expect("Error formatting string");
         }
         if state.cultist_count > 0 {
-            write!(&mut s,"{}:{}", Token::Cultist, state.cultist_count);
+            write!(&mut s,"{}:{}", Token::Cultist, state.cultist_count).expect("Error formatting string");
         }
         if state.tablet_count > 0 {
-            write!(&mut s, "{}:{}", Token::Tablet, state.tablet_count);
+            write!(&mut s, "{}:{}", Token::Tablet, state.tablet_count).expect("Error formatting string");
         }
         if state.elder_thing_count > 0 {
-            write!(&mut s,"{}:{}", Token::ElderThing, state.elder_thing_count);
+            write!(&mut s,"{}:{}", Token::ElderThing, state.elder_thing_count).expect("Error formatting string");
         }
-        writeln!(&mut s, "  Final Token: {}, P: {1:.4}", state.final_draw, prob);
+        writeln!(&mut s, "  Final Token: {}, P: {1:.4}", state.final_draw, prob).expect("Error formatting string");
     }
 
-    writeln!(&mut s, "*------------------------------------------------------*");
+    writeln!(&mut s, "*------------------------------------------------------*").expect("Error formatting string");
 
     return s;
 }
 
-fn count_tokens(chaos_bag: &ChaosBag) -> u8 {
-    let mut sum: u8 = 0;
+fn count_tokens(chaos_bag: &ChaosBag) -> i8 {
+    let mut sum: i8 = 0;
     for count in chaos_bag.token_counts.values() {
         sum += *count;
     }
@@ -283,7 +275,7 @@ fn new_draw_again_state(da_state: &DrawAgainState, token: Token) -> DrawAgainSta
     
 }
 
-fn draw_iter(chaos_bag: &ChaosBag, states: &HashMap<DrawAgainState, f64>, finished_states: &mut HashMap<FinalState, f64>, tokens_left: u8) -> HashMap<DrawAgainState, f64> {
+fn draw_iter(chaos_bag: &ChaosBag, states: &HashMap<DrawAgainState, f64>, finished_states: &mut HashMap<FinalState, f64>, tokens_left: i8) -> HashMap<DrawAgainState, f64> {
     let mut new_states: HashMap<DrawAgainState, f64> = HashMap::new();
     let this_draw_p: f64 = 1.0 / (tokens_left as f64);
 
@@ -336,12 +328,72 @@ fn draw_iter(chaos_bag: &ChaosBag, states: &HashMap<DrawAgainState, f64>, finish
     return new_states;
 }
 
-fn main() {
-    draw();
+fn compute_test_score(chaos_bag: &ChaosBag, final_state: &FinalState) -> i8 {
+    let mut final_val: i8;
+
+    if final_state.final_draw == Token::AutoFail {
+        // return minimum if we drew auto fail
+        return AUTO_FAIL;
+    } else if final_state.final_draw == Token::ElderSign && chaos_bag.token_values[&Token::ElderSign] == AUTO_SUCCESS {
+        // return max if we drew auto success elder sign
+        return AUTO_SUCCESS;
+    } else {
+        println!("{}", final_state.final_draw);
+        final_val = chaos_bag.token_values[&final_state.final_draw];
+    }
+
+    if chaos_bag.draw_again.contains_key(&Token::Bless) {
+        final_val += chaos_bag.token_values[&Token::Bless] * final_state.bless_count;
+    }
+    if chaos_bag.draw_again.contains_key(&Token::Curse) {
+        final_val += chaos_bag.token_values[&Token::Curse] * final_state.curse_count;
+    }
+    if chaos_bag.draw_again.contains_key(&Token::Skull) {
+        final_val += chaos_bag.token_values[&Token::Skull] * final_state.skull_count;
+    }
+    if chaos_bag.draw_again.contains_key(&Token::Cultist) {
+        final_val += chaos_bag.token_values[&Token::Cultist] * final_state.cultist_count;
+    }
+    if chaos_bag.draw_again.contains_key(&Token::Tablet) {
+        final_val += chaos_bag.token_values[&Token::Tablet] * final_state.tablet_count;
+    }
+    if chaos_bag.draw_again.contains_key(&Token::ElderThing) {
+        final_val += chaos_bag.token_values[&Token::ElderThing] * final_state.elder_thing_count;
+    }
+    
+    return final_val;
+}
+
+fn compute_test_probabilities(chaos_bag: &ChaosBag, finished_states: &HashMap<FinalState,f64>) -> Vec<(i8,f64)> {
+    let mut probabilities: Vec<(i8,f64)> = Vec::new();
+
+    for (final_state, prob) in finished_states {
+        let score = compute_test_score(chaos_bag, final_state);
+
+        probabilities.push((score, *prob));
+    }
+
+    probabilities.sort_unstable_by(|a, b| a.0.cmp(&b.0));
+
+    // Compress final results combining equal scores
+    let mut curr: usize = 0;
+
+    while curr < probabilities.len() - 1 {
+        let next = curr + 1;
+        if probabilities[next].0 == probabilities[curr].0 {
+            probabilities[curr].1 += probabilities.remove(next).1;
+        } else if probabilities[next].0 > probabilities[curr].0 + 1 && probabilities[curr].0 != AUTO_FAIL && probabilities[next].0 != AUTO_SUCCESS {
+            probabilities.insert(next, (probabilities[curr].0 + 1, 0.0));
+        } else {
+            curr += 1;
+        }
+    }
+
+    return probabilities;
 }
 
 #[wasm_bindgen]
-pub fn draw_bag(chaos_bag: &mut ChaosBag) -> String {
+pub fn draw_bag(chaos_bag: &mut ChaosBag) -> JsValue {
     let mut initial_states: HashMap<DrawAgainState,f64> = HashMap::new();
     let mut finished_states: HashMap<FinalState,f64> = HashMap::new();
     initial_states.insert(DrawAgainState { bless_count: 0, curse_count: 0, skull_count: 0, cultist_count: 0, tablet_count: 0, elder_thing_count: 0}, 1.0);
@@ -351,16 +403,19 @@ pub fn draw_bag(chaos_bag: &mut ChaosBag) -> String {
     
     for i in 0..30 {
         let new_states = draw_iter(&chaos_bag, &states, &mut finished_states, token_count - i);
-        let all_probs = sum_probabilities(&finished_states);
-        println!("{0:.12}", all_probs);
+        //let all_probs = sum_probabilities(&finished_states);
+        //println!("{0:.12}", all_probs);
         states = new_states;
     }
 
-    let s: String = get_final_states_str(&finished_states);
-    return s;
+    let results = compute_test_probabilities(&chaos_bag, &finished_states);
+
+    //let s: String = get_final_states_str(&finished_states);
+
+    return JsValue::from_serde(&results).unwrap();
 }
 
-#[wasm_bindgen]
+#[test]
 pub fn draw() {
     let mut my_chaos_bag = build_chaos_bag();
 
@@ -382,25 +437,25 @@ pub fn draw() {
     my_chaos_bag.set_token_value(Token::Cultist, -2);
     my_chaos_bag.set_token_value(Token::ElderSign, 2);  
 
-    //print_chaos_bag(&my_chaos_bag);
+    // //print_chaos_bag(&my_chaos_bag);
 
-    let mut initial_states: HashMap<DrawAgainState,f64> = HashMap::new();
-    let mut finished_states: HashMap<FinalState,f64> = HashMap::new();
-    initial_states.insert(DrawAgainState { bless_count: 0, curse_count: 0, skull_count: 0, cultist_count: 0, tablet_count: 0, elder_thing_count: 0}, 1.0);
+    // let mut initial_states: HashMap<DrawAgainState,f64> = HashMap::new();
+    // let mut finished_states: HashMap<FinalState,f64> = HashMap::new();
+    // initial_states.insert(DrawAgainState { bless_count: 0, curse_count: 0, skull_count: 0, cultist_count: 0, tablet_count: 0, elder_thing_count: 0}, 1.0);
 
-    let token_count = count_tokens(&my_chaos_bag);
+    // let token_count = count_tokens(&my_chaos_bag);
 
-    //println!("{}", token_count);
+    // //println!("{}", token_count);
 
-    let mut states = initial_states;
+    // let mut states = initial_states;
     
 
-    for i in 0..1 {
-        let new_states = draw_iter(&my_chaos_bag, &states, &mut finished_states, token_count - i);
-        let all_probs = sum_probabilities(&finished_states);
-        println!("{0:.12}", all_probs);    
-        states = new_states;
-    }
+    // for i in 0..1 {
+    //     let new_states = draw_iter(&my_chaos_bag, &states, &mut finished_states, token_count - i);
+    //     let all_probs = sum_probabilities(&finished_states);
+    //     println!("{0:.12}", all_probs);    
+    //     states = new_states;
+    // }
 
     // let new_states = draw_iter(&my_chaos_bag, &initial_states, &mut finished_states, token_count);
     // let all_probs = sum_probabilities(&finished_states);
@@ -415,7 +470,9 @@ pub fn draw() {
     // println!("{0:.4}", all_probs);
 
     //print_final_states(&finished_states);
+
+    draw_bag(&mut my_chaos_bag);
     
-    let s: String = get_final_states_str(&finished_states);
-    alert(&s);
+    // let s: String = get_final_states_str(&finished_states);
+    // alert(&s);
 }

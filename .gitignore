@@ -1,5 +1,6 @@
 /target
 /css-dist
-/ahlcg-simulator-frontend/css
-/ahlcg-simulator-frontend/css/custom.css
+/ahlcg-sim-frontend/css
+/ahlcg-sim-frontend/css/custom.css
 /node_modules
+/.vscode

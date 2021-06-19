@@ -1,4 +1,7 @@
-import init, {draw, build_chaos_bag, draw_bag, ChaosBag, Token} from './pkg/ahlcg_bag_sim.js'
+import init, {build_chaos_bag, draw_bag, ChaosBag, Token} from './pkg/ahlcg_bag_sim.js'
+
+const AutoFail = -128;
+const AutoSuccess = 127;
 
 document.addEventListener("DOMContentLoaded", 
 	async function() { 
@@ -18,19 +21,53 @@ document.addEventListener("DOMContentLoaded",
 		auto_succ_chk.addEventListener('click', toggleElderSignState);
 		
 		toggleElderSignState();
-		
-		buildPlot();
 });
 
-function buildPlot() {
+var myChart;
+function buildPlot(probabilities) {
+	
+	var labels = [];
+	var values = [];
+	
+	var cummulative = 0;
+	
+	var haveAutoSucceed = false;
+	for (let i = probabilities.length - 1; i >= 0; i--) {
+		if (probabilities[i][0] == AutoFail) {
+			labels[labels.length - 1] = labels[labels.length - 1] + ' or greater';
+			break;
+		}
+		if (probabilities[i][0] == AutoSuccess) {
+			haveAutoSucceed = true;
+			cummulative += probabilities[i][1] * 100;
+			continue;
+		}
+		
+		var s = String(-probabilities[i][0]);
+		if (probabilities[i][0] < 0) {
+			s = '+' + s;
+		}
+		if (haveAutoSucceed) {
+			s = s + ' or less';
+			haveAutoSucceed = false;
+		}
+		
+		labels.push(s);
+		cummulative += probabilities[i][1] * 100;
+		values.push(cummulative);
+	}
+	
 	var ctx = document.getElementById('probability-chart').getContext('2d');
-	var myChart = new Chart(ctx, {
+	if (myChart) {
+		myChart.destroy();
+	}
+	
+	myChart = new Chart(ctx, {
 		type: 'bar',
 		data: {
-			labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+			labels: labels,
 			datasets: [{
-				label: '# of Votes',
-				data: [12, 99, 3, 5, 2, 3],
+				data: values,
 				backgroundColor: [
 					'rgba(0, 166, 85, 0.5)',
 				],
@@ -41,18 +78,23 @@ function buildPlot() {
 		options: {
 			scales: {
 				y: {
-					beginAtZero: true,
 					title: {
 						display: true,
-						text: "% chance to pass",
+						text: "% Chance to Pass",
 					},
 					grid: {
-						display: false,
+						display: true,
 					},
+					min: 0,
+					max: 100,
 				},
 				x: {
 					grid: {
 						display: false,
+					},
+					title: {
+						display: true,
+						text: "Relative skill value",
 					},
 				},
 			},
@@ -60,8 +102,27 @@ function buildPlot() {
 				legend: {
 					display: false,
 				},
+				tooltip: {
+					mode: 'x',
+					intersect: false,
+					displayColors: false,
+					callbacks: {
+						title: (toolTipItems, data) => {
+							let title = 'Relative skill: ' + String(toolTipItems[0].label); // uses the x value of this point as the title
+							return title;
+						},
+						label:  (toolTipItem, data) => {
+							let label = 'Chance to pass: ' + toolTipItem.raw.toPrecision(4) + '%';
+							return label;
+						}
+					},
+				},
 			},
-		}
+			interaction: {
+				mode: 'x',
+				intersect: false,
+			},
+		},
 	});
 }
 
@@ -156,7 +217,7 @@ function buildChaosBag() {
 	bag.set_token_count(Token['MinusThree'], lookupCount('minus-three-btn-radio',0,2));
 	bag.set_token_count(Token['MinusFour'], lookupCount('minus-four-btn-radio',0,2));
 	bag.set_token_count(Token['MinusFive'], lookupCount('minus-five-btn-radio',0,2));
-	bag.set_token_count(Token['MinusSize'], lookupCount('minus-six-btn-radio',0,2));
+	bag.set_token_count(Token['MinusSix'], lookupCount('minus-six-btn-radio',0,2));
 	bag.set_token_count(Token['MinusSeven'], lookupCount('minus-seven-btn-radio',0,2));
 	bag.set_token_count(Token['MinusEight'], lookupCount('minus-eight-btn-radio',0,2));
 	
@@ -175,7 +236,7 @@ function buildChaosBag() {
 	bag.set_token_count(Token['ElderSign'], lookupCount('elder-sign-btn-radio',0,1));
 	bag.set_token_value(Token['ElderSign'], parseInt(document.getElementById('elder-sign-value').value));
 	if (document.getElementById('elder-sign-auto-success-checkbox').checked) {
-		bag.set_token_value(Token['ElderSign'], 127);
+		bag.set_token_value(Token['ElderSign'], AutoSuccess);
 	}
 	
 	bag.set_token_count(Token['AutoFail'], lookupCount('auto-fail-btn-radio',0,1));
@@ -183,6 +244,6 @@ function buildChaosBag() {
 	bag.set_token_count(Token['Bless'], lookupCount('bless-btn-radio',0,10));
 	bag.set_token_count(Token['Curse'], lookupCount('curse-btn-radio',0,10));
 	
-	var s = draw_bag(bag);
-	alert(s);
+	var probabilities = draw_bag(bag);
+	buildPlot(probabilities);
 }
