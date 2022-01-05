@@ -244,6 +244,8 @@ function buildChaosBag() {
 	bag.set_token_count(Token['Bless'], lookupCount('bless-btn-radio',0,10));
 	bag.set_token_count(Token['Curse'], lookupCount('curse-btn-radio',0,10));
 	
+	bag.set_token_count(Token['Frost'], lookupCount('frost-btn-radio',0,8));
+	
 	var probabilities = draw_bag(bag);
 	buildPlot(probabilities);
 }

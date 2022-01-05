@@ -31,7 +31,8 @@ pub enum Token {
     ElderSign,
     AutoFail,
     Bless,
-    Curse
+    Curse,
+    Frost
 }
 
 impl fmt::Display for Token {
@@ -55,6 +56,7 @@ impl fmt::Display for Token {
             Token::AutoFail     => write!(f, "[AF]"),
             Token::Bless        => write!(f, "[Bl]"),
             Token::Curse        => write!(f, "[Cr]"),
+            Token::Frost        => write!(f, "[Fs]"),
         }
     }
 }
@@ -74,6 +76,7 @@ struct DrawAgainState {
     cultist_count: i8,
     tablet_count: i8,
     elder_thing_count: i8,
+    frost_count: i8,
     //probability: f64
 }
 
@@ -85,6 +88,7 @@ pub struct FinalState {
     cultist_count: i8,
     tablet_count: i8,
     elder_thing_count: i8,
+    frost_count: i8,
     final_draw: Token,
     //probability: f64
 }
@@ -111,10 +115,12 @@ pub fn build_chaos_bag() -> ChaosBag {
     chaos_bag.token_values.insert(Token::AutoFail, -128);
     chaos_bag.token_values.insert(Token::Bless, 2);
     chaos_bag.token_values.insert(Token::Curse, -2);
+    chaos_bag.token_values.insert(Token::Frost, -1);
 
     // Set up default draw again statuses for Bless/Curse
     chaos_bag.draw_again.insert(Token::Bless, true);
     chaos_bag.draw_again.insert(Token::Curse, true);
+    chaos_bag.draw_again.insert(Token::Frost, true);
 
     return chaos_bag;
 }
@@ -195,6 +201,7 @@ fn new_final_state(da_state: &DrawAgainState, token: Token) -> FinalState {
         cultist_count:      da_state.cultist_count,
         tablet_count:       da_state.tablet_count,
         elder_thing_count:  da_state.elder_thing_count,
+        frost_count:        da_state.frost_count,
         final_draw:         token
     }
 }
@@ -208,7 +215,8 @@ fn new_draw_again_state(da_state: &DrawAgainState, token: Token) -> DrawAgainSta
                 skull_count:        da_state.skull_count,
                 cultist_count:      da_state.cultist_count,
                 tablet_count:       da_state.tablet_count,
-                elder_thing_count:  da_state.elder_thing_count
+                elder_thing_count:  da_state.elder_thing_count,
+                frost_count:        da_state.frost_count,
             }
         },
         Token::Curse => {
@@ -218,7 +226,8 @@ fn new_draw_again_state(da_state: &DrawAgainState, token: Token) -> DrawAgainSta
                 skull_count:        da_state.skull_count,
                 cultist_count:      da_state.cultist_count,
                 tablet_count:       da_state.tablet_count,
-                elder_thing_count:  da_state.elder_thing_count
+                elder_thing_count:  da_state.elder_thing_count,
+                frost_count:        da_state.frost_count,
             }
         },
         Token::Skull => {
@@ -228,7 +237,8 @@ fn new_draw_again_state(da_state: &DrawAgainState, token: Token) -> DrawAgainSta
                 skull_count:        da_state.skull_count + 1,
                 cultist_count:      da_state.cultist_count,
                 tablet_count:       da_state.tablet_count,
-                elder_thing_count:  da_state.elder_thing_count
+                elder_thing_count:  da_state.elder_thing_count,
+                frost_count:        da_state.frost_count,
             }
         },
         Token::Cultist => {
@@ -238,7 +248,8 @@ fn new_draw_again_state(da_state: &DrawAgainState, token: Token) -> DrawAgainSta
                 skull_count:        da_state.skull_count,
                 cultist_count:      da_state.cultist_count + 1,
                 tablet_count:       da_state.tablet_count,
-                elder_thing_count:  da_state.elder_thing_count
+                elder_thing_count:  da_state.elder_thing_count,
+                frost_count:        da_state.frost_count,
             }
         },
         Token::Tablet => {
@@ -248,7 +259,8 @@ fn new_draw_again_state(da_state: &DrawAgainState, token: Token) -> DrawAgainSta
                 skull_count:        da_state.skull_count,
                 cultist_count:      da_state.cultist_count,
                 tablet_count:       da_state.tablet_count + 1,
-                elder_thing_count:  da_state.elder_thing_count
+                elder_thing_count:  da_state.elder_thing_count,
+                frost_count:        da_state.frost_count,
             }
         },
         Token::ElderThing => {
@@ -258,7 +270,19 @@ fn new_draw_again_state(da_state: &DrawAgainState, token: Token) -> DrawAgainSta
                 skull_count:        da_state.skull_count,
                 cultist_count:      da_state.cultist_count,
                 tablet_count:       da_state.tablet_count,
-                elder_thing_count:  da_state.elder_thing_count + 1
+                elder_thing_count:  da_state.elder_thing_count + 1,
+                frost_count:        da_state.frost_count,
+            }
+        },
+		Token::Frost => {
+            DrawAgainState {
+                bless_count:        da_state.bless_count,
+                curse_count:        da_state.curse_count,
+                skull_count:        da_state.skull_count,
+                cultist_count:      da_state.cultist_count,
+                tablet_count:       da_state.tablet_count,
+                elder_thing_count:  da_state.elder_thing_count,
+                frost_count:        da_state.frost_count + 1,
             }
         },
         _ => {
@@ -268,7 +292,8 @@ fn new_draw_again_state(da_state: &DrawAgainState, token: Token) -> DrawAgainSta
                 skull_count:        da_state.skull_count,
                 cultist_count:      da_state.cultist_count,
                 tablet_count:       da_state.tablet_count,
-                elder_thing_count:  da_state.elder_thing_count
+                elder_thing_count:  da_state.elder_thing_count,
+                frost_count:        da_state.frost_count,
             }
         }
     }
@@ -296,6 +321,7 @@ fn draw_iter(chaos_bag: &ChaosBag, states: &HashMap<DrawAgainState, f64>, finish
                 // Make sure this state has not already drawn all of this
                 if  *token == Token::Bless && state.bless_count >= chaos_bag.token_counts[&Token::Bless] ||
                     *token == Token::Curse && state.curse_count >= chaos_bag.token_counts[&Token::Curse] ||
+                    *token == Token::Frost && state.frost_count >= chaos_bag.token_counts[&Token::Frost] ||
                     *token == Token::Skull && state.skull_count >= chaos_bag.token_counts[&Token::Skull] ||
                     *token == Token::Cultist && state.cultist_count >= chaos_bag.token_counts[&Token::Cultist] ||
                     *token == Token::Tablet && state.tablet_count >= chaos_bag.token_counts[&Token::Tablet] ||
@@ -307,6 +333,7 @@ fn draw_iter(chaos_bag: &ChaosBag, states: &HashMap<DrawAgainState, f64>, finish
                     let count: f64 = match token {
                         Token::Bless => { (chaos_bag.token_counts[&Token::Bless] - state.bless_count) as f64 },
                         Token::Curse => { (chaos_bag.token_counts[&Token::Curse] - state.curse_count) as f64 },
+                        Token::Frost => { (chaos_bag.token_counts[&Token::Frost] - state.frost_count) as f64 },
                         Token::Skull => { (chaos_bag.token_counts[&Token::Skull] - state.skull_count) as f64 },
                         Token::Cultist => { (chaos_bag.token_counts[&Token::Cultist] - state.cultist_count) as f64 },
                         Token::Tablet => { (chaos_bag.token_counts[&Token::Tablet] - state.tablet_count) as f64 },
@@ -337,6 +364,8 @@ fn compute_test_score(chaos_bag: &ChaosBag, final_state: &FinalState) -> i8 {
     } else if final_state.final_draw == Token::ElderSign && chaos_bag.token_values[&Token::ElderSign] == AUTO_SUCCESS {
         // return max if we drew auto success elder sign
         return AUTO_SUCCESS;
+    } else if final_state.frost_count >= 2 {
+        return AUTO_FAIL;
     } else {
         println!("{}", final_state.final_draw);
         final_val = chaos_bag.token_values[&final_state.final_draw];
@@ -359,6 +388,9 @@ fn compute_test_score(chaos_bag: &ChaosBag, final_state: &FinalState) -> i8 {
     }
     if chaos_bag.draw_again.contains_key(&Token::ElderThing) {
         final_val += chaos_bag.token_values[&Token::ElderThing] * final_state.elder_thing_count;
+    }
+    if chaos_bag.draw_again.contains_key(&Token::Frost) {
+        final_val += chaos_bag.token_values[&Token::Frost] * final_state.frost_count;
     }
     
     return final_val;
@@ -396,7 +428,9 @@ fn compute_test_probabilities(chaos_bag: &ChaosBag, finished_states: &HashMap<Fi
 pub fn draw_bag(chaos_bag: &mut ChaosBag) -> JsValue {
     let mut initial_states: HashMap<DrawAgainState,f64> = HashMap::new();
     let mut finished_states: HashMap<FinalState,f64> = HashMap::new();
-    initial_states.insert(DrawAgainState { bless_count: 0, curse_count: 0, skull_count: 0, cultist_count: 0, tablet_count: 0, elder_thing_count: 0}, 1.0);
+    initial_states.insert(DrawAgainState 
+        { bless_count: 0, curse_count: 0, skull_count: 0, cultist_count: 0,
+          tablet_count: 0, elder_thing_count: 0, frost_count: 0}, 1.0);
 
     let token_count = count_tokens(&chaos_bag);
     let mut states = initial_states;
