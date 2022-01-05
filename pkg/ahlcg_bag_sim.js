@@ -71,7 +71,7 @@ export function draw_bag(chaos_bag) {
 
 /**
 */
-export const Token = Object.freeze({ PlusOne:0,"0":"PlusOne",Zero:1,"1":"Zero",MinusOne:2,"2":"MinusOne",MinusTwo:3,"3":"MinusTwo",MinusThree:4,"4":"MinusThree",MinusFour:5,"5":"MinusFour",MinusFive:6,"6":"MinusFive",MinusSix:7,"7":"MinusSix",MinusSeven:8,"8":"MinusSeven",MinusEight:9,"9":"MinusEight",Skull:10,"10":"Skull",Cultist:11,"11":"Cultist",ElderThing:12,"12":"ElderThing",Tablet:13,"13":"Tablet",ElderSign:14,"14":"ElderSign",AutoFail:15,"15":"AutoFail",Bless:16,"16":"Bless",Curse:17,"17":"Curse", });
+export const Token = Object.freeze({ PlusOne:0,"0":"PlusOne",Zero:1,"1":"Zero",MinusOne:2,"2":"MinusOne",MinusTwo:3,"3":"MinusTwo",MinusThree:4,"4":"MinusThree",MinusFour:5,"5":"MinusFour",MinusFive:6,"6":"MinusFive",MinusSix:7,"7":"MinusSix",MinusSeven:8,"8":"MinusSeven",MinusEight:9,"9":"MinusEight",Skull:10,"10":"Skull",Cultist:11,"11":"Cultist",ElderThing:12,"12":"ElderThing",Tablet:13,"13":"Tablet",ElderSign:14,"14":"ElderSign",AutoFail:15,"15":"AutoFail",Bless:16,"16":"Bless",Curse:17,"17":"Curse",Frost:18,"18":"Frost", });
 /**
 */
 export class ChaosBag {
